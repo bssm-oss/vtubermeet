@@ -1,0 +1,17 @@
+.build/
+.swiftpm/
+DerivedData/
+*.xcuserstate
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+AGENTS.md
+LocalVoiceAssets/
+graphify-out/
+.omc/
+.omx/
+.playwright-mcp/
+.sisyphus/
+vtubermeet-ui-before.png

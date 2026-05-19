@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VTuberMeet Live2D Viewer</title>
+  <link rel="stylesheet" href="viewer.css">
+</head>
+<body>
+  <main id="stage" aria-label="Live2D character stage">
+    <canvas id="live2d-canvas" aria-label="Live2D character model"></canvas>
+    <div id="status">Live2D 모델을 불러오는 중...</div>
+  </main>
+  <script src="vendor/live2dcubismcore.min.js"></script>
+  <script src="vendor/pixi.min.js"></script>
+  <script src="vendor/pixi-live2d-display-cubism4.min.js"></script>
+  <script src="viewer.js"></script>
+</body>
+</html>

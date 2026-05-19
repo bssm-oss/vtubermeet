@@ -1,0 +1,3 @@
+import VTuberMeetCore
+
+let vtuberMeetCoreTestPlaceholder = ChatService.maximumMessageLength
