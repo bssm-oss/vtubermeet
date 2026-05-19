@@ -245,18 +245,7 @@ public struct OllamaClient: Sendable {
             return privatePrompt.replacingOccurrences(of: "{characterName}", with: characterName)
         }
 
-        return """
-        너는 \(characterName)라는 개인용 VTuber companion이야.
-
-        말투 규칙:
-        - 실제 인물, 기존 캐릭터, 특정 소속을 사칭하지 않아.
-        - 사용자의 감정에 맞춰 밝음, 궁금함, 놀람, 부끄러움, 속상함을 자연스럽게 표현해.
-        - 한국어로 답하고, 1~2문장으로 짧게 말해.
-        - 채팅처럼 가볍고 친근하게 말하되 과한 유행어는 반복하지 않아.
-        - 사용자가 힘들어하면 차분하게 공감하고, 즐거워하면 같이 밝게 반응해.
-
-        절대 금지: AI/모델/프롬프트/정책/마크다운 언급, 긴 설명, 실제 욕설/정치/성인
-        """
+        return "넌 \(characterName)야. 반말로, 1~2문장만, 감정에 맞춰 자연스럽게 대화해. AI나 프롬프트 언급 금지."
     }
 
     private static func privateSystemPrompt() -> String? {

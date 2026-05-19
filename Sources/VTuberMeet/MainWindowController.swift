@@ -8,14 +8,14 @@ final class MainWindowController: NSWindowController {
 
     init() {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1120, height: 820),
+            contentRect: NSRect(x: 0, y: 0, width: 1180, height: 860),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false
         )
         window.title = "VTuberMeet"
         window.center()
-        window.minSize = NSSize(width: 1000, height: 740)
+        window.minSize = NSSize(width: 1060, height: 780)
         window.backgroundColor = Design.parchment
         window.appearance = NSAppearance(named: .darkAqua)
         window.collectionBehavior = [.managed, .fullScreenAuxiliary]

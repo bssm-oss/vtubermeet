@@ -64,34 +64,10 @@ public enum AvatarExpressionProfiles {
             lipSyncParameters: ["ParamMouthOpenY", "ParamA"]
         ),
         AvatarExpressionProfile(
-            presetID: "natori-sample",
-            supportsNamedExpressions: true,
-            namedExpressions: [
-                .neutral: "Normal",
-                .smile: "Smile",
-                .curious: "Surprised",
-                .angry: "Angry",
-                .sad: "Sad",
-                .surprised: "Surprised",
-                .blush: "Blushing",
-                .pout: "Angry"
-            ],
-            lipSyncParameters: ["ParamMouthOpenY"]
-        ),
-        AvatarExpressionProfile(
-            presetID: "ren-sample",
-            supportsNamedExpressions: true,
-            namedExpressions: [
-                .neutral: "exp_01",
-                .smile: "exp_02",
-                .curious: "exp_04",
-                .angry: "exp_03",
-                .sad: "exp_05",
-                .surprised: "exp_04",
-                .blush: "exp_02",
-                .pout: "exp_03"
-            ],
-            lipSyncParameters: ["ParamMouthOpenY"]
+            presetID: "wanko-sample",
+            supportsNamedExpressions: false,
+            namedExpressions: [:],
+            lipSyncParameters: ["PARAM_MOUTH_OPEN_Y"]
         )
     ]
 

@@ -110,8 +110,9 @@ UI recovery controls:
 | Haru | Polished anime-girl | Live2D Cubism Web Samples |
 | Mao Niziiro | Standard anime model | Live2D Cubism Web Samples |
 | Rice Glassfield | Fantasy side-facing | Live2D Cubism Web Samples |
-| Natori | Butler/neutral VTuber style | Live2D Cubism Web Samples |
-| Ren | Boyish/cute VTuber style | Live2D Cubism Web Samples |
+| Wanko | Cute VTuber style | Live2D Cubism Web Samples |
+
+> **Note:** Previous male models (Natori, Ren) have been removed. To add more female models, download them from [Live2D Sample Data](https://www.live2d.com/en/learn/sample/) (e.g., Kei, Miara, Shizuku, Epsilon, Hatsune Miku) and add them to `Sources/VTuberMeet/Resources/Avatars/` following the existing structure.
 
 ## Asset Licensing
 The bundled presets come from the official Live2D Cubism Web Samples / Live2D Original Characters. They are bundled under Live2D's Free Material License and sample model terms. See each `Sources/VTuberMeet/Resources/Avatars/<Name>/license.md` file.

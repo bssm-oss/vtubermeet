@@ -111,7 +111,7 @@ let repositoryManifest = try AvatarManifest.decode(Data(contentsOf: repositoryMa
 check(repositoryManifest.count >= 5, "bundled manifest should include several cute Live2D presets")
 check(repositoryManifest[0].id == "hiyori-momose", "default bundled manifest preset should be Hiyori Momose")
 check(repositoryManifest.contains { $0.id == "mao-niziiro" }, "bundled manifest should include Mao")
-check(repositoryManifest.contains { $0.id == "ren-sample" }, "bundled manifest should include Ren")
+check(repositoryManifest.contains { $0.id == "wanko-sample" }, "bundled manifest should include Wanko")
 
 let resourceRootURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
     .appendingPathComponent("Sources/VTuberMeet/Resources")

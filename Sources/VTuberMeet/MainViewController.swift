@@ -184,12 +184,12 @@ final class MainViewController: NSViewController {
         stack.addArrangedSubview(transcriptScrollView)
 
         NSLayoutConstraint.activate([
-            panel.heightAnchor.constraint(greaterThanOrEqualToConstant: 410),
-            stack.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 18),
-            stack.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -18),
-            stack.topAnchor.constraint(equalTo: panel.topAnchor, constant: 18),
-            stack.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -18),
-            transcriptScrollView.heightAnchor.constraint(greaterThanOrEqualToConstant: 320),
+            panel.heightAnchor.constraint(greaterThanOrEqualToConstant: 360),
+            stack.leadingAnchor.constraint(equalTo: panel.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: panel.trailingAnchor, constant: -16),
+            stack.topAnchor.constraint(equalTo: panel.topAnchor, constant: 16),
+            stack.bottomAnchor.constraint(equalTo: panel.bottomAnchor, constant: -16),
+            transcriptScrollView.heightAnchor.constraint(greaterThanOrEqualToConstant: 280),
             transcriptDocumentView.widthAnchor.constraint(equalTo: transcriptScrollView.contentView.widthAnchor),
             transcriptStack.leadingAnchor.constraint(equalTo: transcriptDocumentView.leadingAnchor),
             transcriptStack.trailingAnchor.constraint(equalTo: transcriptDocumentView.trailingAnchor),
@@ -263,7 +263,7 @@ final class MainViewController: NSViewController {
         container.addSubview(errorLabel)
 
         NSLayoutConstraint.activate([
-            container.heightAnchor.constraint(greaterThanOrEqualToConstant: 90),
+            container.heightAnchor.constraint(greaterThanOrEqualToConstant: 82),
             topBorder.topAnchor.constraint(equalTo: container.topAnchor),
             topBorder.leadingAnchor.constraint(equalTo: container.leadingAnchor),
             topBorder.trailingAnchor.constraint(equalTo: container.trailingAnchor),
@@ -295,7 +295,7 @@ final class MainViewController: NSViewController {
 
         let stack = NSStackView()
         stack.orientation = .vertical
-        stack.spacing = 14
+        stack.spacing = 10
         stack.translatesAutoresizingMaskIntoConstraints = false
         panel.addSubview(stack)
 
@@ -751,11 +751,20 @@ final class MainViewController: NSViewController {
     }
 
     private func scrollTranscriptToBottom() {
-        transcriptDocumentView.layoutSubtreeIfNeeded()
+        transcriptDocumentView.layout()
+        transcriptScrollView.layout()
+
+        guard let lastMessage = transcriptStack.arrangedSubviews.last else { return }
+        let lastMessageRect = lastMessage.convert(lastMessage.bounds, to: transcriptDocumentView)
         let visibleHeight = transcriptScrollView.contentView.bounds.height
         let documentHeight = transcriptDocumentView.bounds.height
-        let y = max(0, documentHeight - visibleHeight)
-        transcriptScrollView.contentView.scroll(to: NSPoint(x: 0, y: y))
+        let targetY = min(lastMessageRect.minY, max(0, documentHeight - visibleHeight))
+
+        NSAnimationContext.runAnimationGroup { context in
+            context.duration = 0.15
+            context.allowsImplicitAnimation = true
+            transcriptScrollView.contentView.animator().scroll(to: NSPoint(x: 0, y: targetY))
+        }
         transcriptScrollView.reflectScrolledClipView(transcriptScrollView.contentView)
     }
 
