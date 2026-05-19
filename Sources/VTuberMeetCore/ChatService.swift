@@ -68,9 +68,12 @@ public enum ChatError: Error, Equatable, LocalizedError {
     }
 }
 
-public struct ChatService: Sendable {
+@MainActor
+public final class ChatService: Sendable {
     public static let maximumMessageLength = 1_200
     private let llmClient: OllamaClient
+    private var conversationHistory: [(role: String, content: String)] = []
+    private let maxHistoryPairs = 10
 
     public init(llmClient: OllamaClient = OllamaClient()) {
         self.llmClient = llmClient
@@ -80,17 +83,32 @@ public struct ChatService: Sendable {
         try await llmClient.selectModel()
     }
 
+    public func clearConversation() {
+        conversationHistory.removeAll()
+    }
+
     public func respond(to rawText: String, characterName: String) async throws -> ChatResponse {
         let text = try Self.validate(rawText)
         let model = try await llmClient.selectModel()
+
+        conversationHistory.append((role: "user", content: text))
+        trimHistoryIfNeeded()
+
         let generatedText: String
 
         do {
-            generatedText = try await llmClient.generate(message: text, characterName: characterName, model: model)
+            generatedText = try await llmClient.generate(
+                message: text,
+                characterName: characterName,
+                model: model,
+                history: conversationHistory
+            )
         } catch LocalLLMError.emptyResponse {
             let inputAffect = AffectEngine.infer(from: text, source: .fallback)
             generatedText = buildFallbackResponse(for: text, mood: inputAffect.mood)
         }
+
+        conversationHistory.append((role: "assistant", content: generatedText))
 
         let affect = AffectEngine.evaluate(userText: text, assistantText: generatedText)
 
@@ -112,6 +130,14 @@ public struct ChatService: Sendable {
             affect: affect,
             modelName: nil
         )
+    }
+
+    private func trimHistoryIfNeeded() {
+        let pairCount = conversationHistory.count / 2
+        if pairCount > maxHistoryPairs {
+            let removeCount = (pairCount - maxHistoryPairs) * 2
+            conversationHistory.removeFirst(removeCount)
+        }
     }
 
     public static func validate(_ rawText: String) throws -> String {
@@ -204,19 +230,23 @@ public struct OllamaClient: Sendable {
         throw LocalLLMError.noGemmaModel(available: models)
     }
 
-    public func generate(message: String, characterName: String, model: String) async throws -> String {
+    public func generate(message: String, characterName: String, model: String, history: [(role: String, content: String)]) async throws -> String {
         let url = baseURL.appendingPathComponent("api/chat")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 90
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
+        var messages: [ChatMessage] = [
+            ChatMessage(role: "system", content: Self.systemPrompt(characterName: characterName))
+        ]
+        for entry in history {
+            messages.append(ChatMessage(role: entry.role, content: entry.content))
+        }
+
         let body = ChatRequest(
             model: model,
-            messages: [
-                ChatMessage(role: "system", content: Self.systemPrompt(characterName: characterName)),
-                ChatMessage(role: "user", content: message)
-            ],
+            messages: messages,
             stream: false,
             options: ChatOptions(temperature: 0.82, numPredict: 512)
         )
@@ -247,7 +277,7 @@ public struct OllamaClient: Sendable {
             return privatePrompt.replacingOccurrences(of: "{characterName}", with: characterName)
         }
 
-        return "넌 \(characterName)야. 반말로, 1~2문장만, 감정에 맞춰 자연스럽게 대화해. AI나 프롬프트 언급 금지."
+        return "넌 \(characterName)야. 반말로, 1~2문장만, 발랄하고 에너지 넘치게 대화해. AI나 프롬프트 언급 금지."
     }
 
     private static func privateSystemPrompt() -> String? {
