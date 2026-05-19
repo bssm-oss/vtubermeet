@@ -1,6 +1,8 @@
 # VTuberMeet
 
-Native macOS VTuber companion prototype built with Swift Package Manager and AppKit.
+> Native macOS VTuber companion prototype built with Swift Package Manager and AppKit.
+
+[한국어 README](README.ko.md)
 
 ## What It Does
 - Launches as a local AppKit macOS app.

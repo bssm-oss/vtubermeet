@@ -205,30 +205,32 @@ public struct OllamaClient: Sendable {
     }
 
     public func generate(message: String, characterName: String, model: String) async throws -> String {
-        let url = baseURL.appendingPathComponent("api/generate")
+        let url = baseURL.appendingPathComponent("api/chat")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.timeoutInterval = 90
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let body = GenerateRequest(
+        let body = ChatRequest(
             model: model,
-            system: Self.systemPrompt(characterName: characterName),
-            prompt: message,
+            messages: [
+                ChatMessage(role: "system", content: Self.systemPrompt(characterName: characterName)),
+                ChatMessage(role: "user", content: message)
+            ],
             stream: false,
-            options: GenerateOptions(temperature: 0.82, numPredict: 120)
+            options: ChatOptions(temperature: 0.82, numPredict: 512)
         )
         request.httpBody = try JSONEncoder().encode(body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
         try Self.validateHTTPResponse(response)
-        let decoded = try JSONDecoder().decode(GenerateResponse.self, from: data)
+        let decoded = try JSONDecoder().decode(OllamaChatResponse.self, from: data)
 
         if let error = decoded.error, !error.isEmpty {
             throw LocalLLMError.runtimeError(error)
         }
 
-        let text = decoded.response.trimmingCharacters(in: .whitespacesAndNewlines)
+        let text = decoded.message.content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         guard !text.isEmpty else { throw LocalLLMError.emptyResponse(model: model) }
         return text
     }
@@ -310,15 +312,19 @@ private struct TagsResponse: Decodable {
     }
 }
 
-private struct GenerateRequest: Encodable {
+private struct ChatRequest: Encodable {
     let model: String
-    let system: String
-    let prompt: String
+    let messages: [ChatMessage]
     let stream: Bool
-    let options: GenerateOptions
+    let options: ChatOptions
 }
 
-private struct GenerateOptions: Encodable {
+private struct ChatMessage: Encodable {
+    let role: String
+    let content: String
+}
+
+private struct ChatOptions: Encodable {
     let temperature: Double
     let numPredict: Int
 
@@ -328,7 +334,12 @@ private struct GenerateOptions: Encodable {
     }
 }
 
-private struct GenerateResponse: Decodable {
-    let response: String
+private struct OllamaChatResponse: Decodable {
+    let message: OllamaChatMessage
     let error: String?
+}
+
+private struct OllamaChatMessage: Decodable {
+    let role: String
+    let content: String
 }
